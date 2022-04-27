@@ -1,6 +1,6 @@
 module.exports = {
     devServer: {
-        host: 'frontend.test',
+        host: 'frontend.intern.test',
         port: 80,
         https: false
     }

@@ -1,9 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import Dashboard from '../views/Dashboard.vue'
 import Register from '../components/auth/Register.vue'
 import Login from '../components/auth/Login.vue'
-
+import store from '../store/index'
+import Articles from '../components/Articles.vue'
+import ArticleDetail from '../components/ArticleDetail.vue'
+import CreateArticle from '../components/CreateArticle.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -15,12 +19,55 @@ const routes = [
   {
     path: '/register',
     name: 'Register',
-    component: Register
+    component: Register,
+    beforeEnter: (to, from, next) => {
+      store.dispatch('checkAuthenticate')
+      .then(() => {
+        next( {name: 'Dashboard'} );
+      })
+      .catch(() => { next() });
+    } 
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard,
+    beforeEnter: (to, from, next) => {
+      store.dispatch('checkAuthenticate')
+      .then(() => {
+        next();
+      })
+      .catch(() => { next({ name: 'Login' }) });
+    },
+    children: [
+      {
+        path: 'articles',
+        name: 'Articles',
+        component: Articles,
+      },
+      {
+        path: 'article/:id',
+        name: 'ArticleDetail',
+        component: ArticleDetail,
+      },
+      {
+        path: 'articles/create',
+        name: 'CreateArticle',
+        component: CreateArticle,
+      }
+    ], 
   },
   {
     path: '/login',
     name: 'Login',
-    component: Login 
+    component: Login, 
+    beforeEnter: (to, from, next) => {
+      store.dispatch('checkAuthenticate')
+      .then(() => {
+        next( {name: 'Dashboard'} );
+      })
+      .catch(() => { next() });
+    } 
   },
   {
     path: '/about',
