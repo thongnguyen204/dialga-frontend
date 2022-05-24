@@ -1,5 +1,5 @@
 <template>
-    <div class="container" id="createArticle">
+    <div class="container" id="articleEdit">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input
@@ -44,7 +44,7 @@
         </div>
 
         <div id="preview">
-            <img class="img-fluid" v-if="imgUrl" :src="imgUrl" />
+            <img class="img-fluid" v-if="article.image" :src="article.image" />
         </div>
 
         <div class="mb-3">
@@ -62,7 +62,7 @@
         </div>
         <div class="mb-3 row">
             <div class="col d-flex justify-content-end">
-            <button @click="create" type="button" class="btn btn-outline-success">
+            <button @click="update" type="button" class="btn btn-outline-success">
                 <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                 Submit
             </button>
@@ -72,69 +72,57 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from 'vuex';
 import baseRequest from '../core/baseRequest';
 export default {
-    name: 'CreateArticle',
+    name: 'ArticleEdit',
     data() {
         return {
             article: {
                 title: '',
                 abstract: '',
                 image: '',
-                content: ''
+                content: '',
+                newImg: '',
             },
             loading: false,
             imagesArray: null,
             imgUrl: '',
+            imgObject: '',
             titleError: '',
             abstractError: '',
             imageError: '',
             contentError: '',
         }
     },
+    created() {
+        this.getArticle(this.$route.params.id);
+        this.imgUrl = this.article.image;
+    },
     methods: {
-        ...mapActions(['createArticle']),
+        ...mapActions(['updateArticle']),
 
         onChange (event) {
             this.imagesArray = event.target.files[0];
-            this.article.image = event.target.files[0];
-            this.imgUrl = URL.createObjectURL(this.imagesArray);
+            this.imgObject = event.target.files[0];
+            this.article.image= URL.createObjectURL(this.imagesArray);
         },
-
-        clearError: function () {
-            this.titleError = '',
-            this.abstractError = '',
-            this.imageError = '',
-            this.contentError = ''
-        },
-
-        uploadImg: function () {
-            if(!this.imagesArray) {
-                this.imageError = "Image require";
-                return;
-            }
-            const formData = new FormData();
-            formData.append('image', this.imagesArray);
-            formData.append('title', this.article.title);
-            formData.append('abstract', this.article.abstract);
-            formData.append('content', this.article.content);
-            this.loading = true;
-            baseRequest.post('api/test-upload', formData)
+        getArticle: function (id) {
+            baseRequest.get('api/articles/' + id)
             .then( response => {
-                this.loading = false;
-                console.log(response.data);
+                this.article = response.data;
             })
             .catch( error => {
                 console.log(error.response.data);
-                this.loading = false;
             });
         },
 
-        create: function () {
-            this.clearError();
+        update: function () {
             this.loading = true;
-            this.createArticle(this.article)
+            if(this.imagesArray) {
+                this.article.newImg = this.imgObject;
+            }
+            this.updateArticle(this.article)
             .then(response => {
                 this.loading = false;
                 console.log(response);
@@ -147,18 +135,13 @@ export default {
                 if(errors['abstract'])
                     this.abstractError = errors['abstract'][0];
                 if(errors['content'])
-                    this.contentError = errors['content'][0];
-            })
-        },
+                    this.contentError = errors['content'][0];        
+            });
+        }
     },
 }
 </script>
 
-<style scoped>
-.container {
-    max-width: 700px;
-}
-.error-msg{
-  color: red;
-}
+<style>
+
 </style>

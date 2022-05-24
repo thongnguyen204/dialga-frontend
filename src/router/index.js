@@ -8,6 +8,8 @@ import store from '../store/index'
 import Articles from '../components/Articles.vue'
 import ArticleDetail from '../components/ArticleDetail.vue'
 import CreateArticle from '../components/CreateArticle.vue'
+import ArticleEdit from '../components/ArticleEdit.vue'
+import UserInfo from '../components/UserInfo.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -15,6 +17,16 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/info',
+    name: 'UserInfo',
+    component: UserInfo,
+    beforeEnter: (to, from, next) => {
+      store.dispatch('checkAuthenticate')
+      .then(() => { next() })
+      .catch(() => { next({ name: 'Login' })})
+    }
   },
   {
     path: '/register',
@@ -49,6 +61,11 @@ const routes = [
         path: 'article/:id',
         name: 'ArticleDetail',
         component: ArticleDetail,
+      },
+      {
+        path: 'article/edit/:id',
+        name: 'ArticleEdit',
+        component: ArticleEdit,
       },
       {
         path: 'articles/create',

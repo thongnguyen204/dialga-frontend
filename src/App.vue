@@ -1,31 +1,47 @@
 <template>
   <div id="app">
-    <div id="bar" class="row">
-      <div class="col" id="nav">
-        <router-link to="/">Home</router-link> 
-        <span v-if="isAuthenticate">
-          <router-link :to="{ name: 'Dashboard' }">| Dashboard</router-link>
-        </span>
+    <div class="content">
+      <div id="bar" class="row">
+        <div class="col" id="nav">
+          <router-link to="/">Home</router-link> 
+          <span v-if="isAuthenticate">
+            <router-link :to="{ name: 'Dashboard' }">| Dashboard</router-link>
+          </span>
+        </div>
+        <div class="col d-flex align-items-center justify-content-center" id="auth">
+          <span v-if="isAuthenticate">
+            <span class="dropdown">
+              <button class="btn btn-danger dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ name }}
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <li><a @click="userInfo" class="dropdown-item" >Account</a></li>
+                <li><a @click="logout" class="dropdown-item" >Logout</a></li>
+              </ul>
+            </span>
+            <!-- <button @click="logout" class="btn btn-danger">Logout</button> -->
+          </span>
+          <span v-if="!isAuthenticate">
+            <router-link to="/register">Register</router-link> |
+            <router-link to="/login">Login</router-link>
+          </span>
+        </div>
       </div>
-      <div class="col d-flex align-items-center justify-content-center" id="auth">
-        <span v-if="isAuthenticate">
-          <button @click="logout" class="btn btn-danger">Logout</button>
-        </span>
-        <span v-if="!isAuthenticate">
-          <router-link to="/register">Register</router-link> |
-          <router-link to="/login">Login</router-link>
-        </span>
-      </div>
+      <router-view />
     </div>
-    <router-view />
+    <Footer></Footer>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import Footer from './components/Footer.vue'
 export default {
+  components: {
+    Footer
+  },
   computed: {
-    ...mapGetters(['isAuthenticate']),
+    ...mapGetters(['isAuthenticate', 'name']),
   },
   methods: {
     ...mapActions(['checkAuthenticate', 'logoutAction']),
@@ -37,6 +53,10 @@ export default {
       .catch(error => {
         console.log(error);
       })
+    },
+
+    userInfo: function () {
+      this.$router.push({name: 'UserInfo'})
     }
   },
   created() {
@@ -84,7 +104,10 @@ export default {
 
 #app{
   background-color: #e6eaed;
-  min-height: 800px;
+}
+
+.content {
+  min-height: 900px;
 }
 
 </style>

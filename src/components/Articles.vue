@@ -1,9 +1,11 @@
 <template>
-    <div id="article">
+    <div id="articles">
         <div id="list-articles" class="container">
             <div v-for="article in articles" :key="article.id">
                 <Article 
                     v-bind:article="article"
+                    :key="article.id"
+                    v-on:refresh="refresh"
                 ></Article>
             </div>
         </div>
@@ -21,10 +23,12 @@ import Paginate from './Paginate.vue'
 import Article from '../components/Article.vue'
 export default {
     name: 'Articles',
+
     components: {
         Paginate,
         Article
     },
+
     data() {
         return {
             articles: Object,
@@ -47,6 +51,9 @@ export default {
                 console.log(error.response.data);
             })
         },
+        refresh: function () {
+            this.getArticles();
+        },
 
         paginate: function (url) {
             const array = url.split("/");
@@ -57,8 +64,11 @@ export default {
 }
 </script>
 
-<style  scoped>
+<style scoped>
 .container {
     max-width: 800px;
+}
+#articles {
+    padding-bottom: 20px;
 }
 </style>

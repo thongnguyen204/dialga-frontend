@@ -7,19 +7,23 @@ export default  {
   state:() =>( {
     isAuthenticate: false,
     name: '',
+    userId: null,
   }),
   getters: {
     isAuthenticate: state => state.isAuthenticate,
-    name: state => state.name
+    name: state => state.name,
+    userId: state => state.userId
   },
   mutations: {
     authenticated (state, data) {
       state.isAuthenticate = true;
-      state.name= data.name;
+      state.name = data.name;
+      state.userId = data.id;
     },
     unauthenticate (state) {
       state.isAuthenticate = false,
-      state.name= null
+      state.name= null,
+      state.userId = null;
     }
   },
   actions: {
@@ -99,6 +103,6 @@ export default  {
         else
           reject('token not found')
       })
-    }
+    },
   },
 }

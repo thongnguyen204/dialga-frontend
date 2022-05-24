@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters} from 'vuex'
 export default {
   name: "Dashboard",
   data() {
@@ -29,7 +29,6 @@ export default {
     document.title = "Dashboard";
   },
   methods: {
-    ...mapMutations(['increment']),
     ...mapActions(['updateCount']),
     clear: function () {
       this.updateCount()
@@ -45,5 +44,7 @@ export default {
 
 .container {
   padding-top: 50px;
+  min-height: 900px;
+  max-width: 900px;
 }
 </style>
